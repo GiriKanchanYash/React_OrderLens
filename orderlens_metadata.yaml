@@ -1,0 +1,1307 @@
+data_model: OrderLensReact
+schema: React_OrderLens
+storage_format: Delta
+domains:
+  customer:
+    customer_dealer_relationships:
+      table_name: customer_dealer_relationships
+      description: Links sales orders to the dealer and end customer involved, capturing the relationship
+        between dealers and their end customers on each order.
+      schema: React_OrderLens
+      storage_format: Delta
+      columns:
+      - name: sales_order_id
+        data_type: STRING
+        description: Unique identifier for the sales order
+      - name: dealer_key
+        data_type: STRING
+        description: Unique identifier for the dealer
+      - name: dealer_name
+        data_type: STRING
+        description: Name of the dealer
+      - name: end_customer_key
+        data_type: STRING
+        description: Unique identifier for the end customer associated with the order
+      - name: end_customer_name
+        data_type: STRING
+        description: Name of the end customer
+      - name: end_customer_country
+        data_type: STRING
+        description: Country code of the end customer
+      - name: end_customer_region
+        data_type: STRING
+        description: Region of the end customer
+      - name: order_created_datetime
+        data_type: TIMESTAMP
+        description: Date and time the order was created
+      - name: total_order_value
+        data_type: DECIMAL(18,2)
+        description: Total value of the order
+      - name: sales_order_category
+        data_type: STRING
+        description: Category classification of the sales order
+    customer_lifetime_value:
+      table_name: customer_lifetime_value
+      description: Summarizes cumulative order activity and value per customer to support lifetime value
+        analysis.
+      schema: React_OrderLens
+      storage_format: Delta
+      columns:
+      - name: customer_key
+        data_type: STRING
+        description: Unique identifier for the customer
+      - name: customer_name
+        data_type: STRING
+        description: Name of the customer
+      - name: customer_type
+        data_type: STRING
+        description: Type/classification of the customer
+      - name: country_code
+        data_type: STRING
+        description: Country code
+      - name: total_orders
+        data_type: INT
+        description: Total number of orders
+      - name: lifetime_value
+        data_type: DECIMAL(18,2)
+        description: Total lifetime value of the customer
+      - name: avg_order_value
+        data_type: DECIMAL(18,2)
+        description: Average value per order
+      - name: first_order_date
+        data_type: TIMESTAMP
+        description: Date of the customer's first order
+      - name: last_order_date
+        data_type: TIMESTAMP
+        description: Date of the customer's most recent order
+      - name: product_categories_purchased
+        data_type: INT
+        description: Number of distinct product categories purchased by the customer
+    customer_order_history:
+      table_name: customer_order_history
+      description: Detailed historical record of orders placed by each customer.
+      schema: React_OrderLens
+      storage_format: Delta
+      columns:
+      - name: customer_key
+        data_type: STRING
+        description: Unique identifier for the customer
+      - name: customer_name
+        data_type: STRING
+        description: Name of the customer
+      - name: customer_type
+        data_type: STRING
+        description: Type/classification of the customer
+      - name: sales_order_id
+        data_type: STRING
+        description: Unique identifier for the sales order
+      - name: order_date_key
+        data_type: INT
+        description: Date key (surrogate date reference) of the order
+      - name: order_created_datetime
+        data_type: TIMESTAMP
+        description: Date and time the order was created
+      - name: sales_order_category
+        data_type: STRING
+        description: Category classification of the sales order
+      - name: currency_code
+        data_type: STRING
+        description: Currency code of the associated monetary values
+      - name: net_order_value
+        data_type: DECIMAL(18,2)
+        description: Net value of the order excluding taxes/surcharges
+      - name: gross_order_value
+        data_type: DECIMAL(18,2)
+        description: Gross value of the order including taxes/surcharges
+      - name: total_order_value
+        data_type: DECIMAL(18,2)
+        description: Total value of the order
+      - name: overall_order_status
+        data_type: STRING
+        description: Overall status of the order
+      - name: sales_org_code
+        data_type: STRING
+        description: Sales organization code
+      - name: distribution_channel_code
+        data_type: STRING
+        description: Distribution channel code
+    customer_profile:
+      table_name: customer_profile
+      description: Master profile attributes describing each customer, including location and account
+        creation details.
+      schema: React_OrderLens
+      storage_format: Delta
+      columns:
+      - name: customer_key
+        data_type: STRING
+        description: Unique identifier for the customer
+      - name: customer_name
+        data_type: STRING
+        description: Name of the customer
+      - name: customer_type
+        data_type: STRING
+        description: Type/classification of the customer
+      - name: country_code
+        data_type: STRING
+        description: Country code
+      - name: region_code
+        data_type: STRING
+        description: Region code
+      - name: city
+        data_type: STRING
+        description: City name
+      - name: postal_code
+        data_type: STRING
+        description: Postal code
+      - name: street_address
+        data_type: STRING
+        description: Street address
+      - name: customer_created_date
+        data_type: DATE
+        description: Date the customer record was created
+    customer_recency_frequency:
+      table_name: customer_recency_frequency
+      description: Recency and frequency metrics per customer, summarizing order timing patterns and customer
+        status.
+      schema: React_OrderLens
+      storage_format: Delta
+      columns:
+      - name: customer_key
+        data_type: STRING
+        description: Unique identifier for the customer
+      - name: customer_name
+        data_type: STRING
+        description: Name of the customer
+      - name: customer_type
+        data_type: STRING
+        description: Type/classification of the customer
+      - name: last_order_date
+        data_type: TIMESTAMP
+        description: Date of the customer's most recent order
+      - name: days_since_last_order
+        data_type: INT
+        description: Number of days elapsed since the customer's last order
+      - name: total_orders
+        data_type: INT
+        description: Total number of orders
+      - name: customer_lifespan_days
+        data_type: INT
+        description: Number of days between the customer's first and last order
+      - name: orders_per_year
+        data_type: DECIMAL(9,2)
+        description: Average number of orders placed per year
+      - name: customer_status
+        data_type: STRING
+        description: Derived status classification of the customer (e.g., active/inactive)
+  dealer:
+    dealer_channel_summary:
+      table_name: dealer_channel_summary
+      description: Aggregated order and fulfillment metrics by sales organization, country, and region,
+        summarizing dealer channel activity.
+      schema: React_OrderLens
+      storage_format: Delta
+      columns:
+      - name: sales_org_code
+        data_type: STRING
+        description: Sales organization code
+      - name: country_code
+        data_type: STRING
+        description: Country code
+      - name: region_code
+        data_type: STRING
+        description: Region code
+      - name: active_dealers
+        data_type: INT
+        description: Count of active dealers
+      - name: total_orders
+        data_type: INT
+        description: Total number of orders
+      - name: total_order_value
+        data_type: DECIMAL(18,2)
+        description: Total value of the order
+      - name: avg_order_value
+        data_type: DECIMAL(18,2)
+        description: Average value per order
+      - name: retail_orders
+        data_type: INT
+        description: Count of retail orders
+      - name: stock_orders
+        data_type: INT
+        description: Count of stock orders
+      - name: retail_order_pct
+        data_type: DECIMAL(9,2)
+        description: Percentage of orders classified as retail
+      - name: fulfilled_orders
+        data_type: INT
+        description: Count of orders that have been fulfilled
+      - name: fulfillment_rate_pct
+        data_type: DECIMAL(9,2)
+        description: Percentage of orders fulfilled
+      - name: parts_orders
+        data_type: INT
+        description: Count of orders for parts
+      - name: equipment_orders
+        data_type: INT
+        description: Count of orders for equipment
+      - name: service_orders
+        data_type: INT
+        description: Count of orders for service
+      - name: engine_orders
+        data_type: INT
+        description: Count of orders for engines
+    dealer_fulfillment_analysis:
+      table_name: dealer_fulfillment_analysis
+      description: Order fulfillment performance metrics by dealer, including blocked-order counts and
+        fulfillment rates.
+      schema: React_OrderLens
+      storage_format: Delta
+      columns:
+      - name: dealer_key
+        data_type: STRING
+        description: Unique identifier for the dealer
+      - name: dealer_name
+        data_type: STRING
+        description: Name of the dealer
+      - name: dealer_country
+        data_type: STRING
+        description: Country code of the dealer
+      - name: sales_order_category
+        data_type: STRING
+        description: Category classification of the sales order
+      - name: total_orders
+        data_type: INT
+        description: Total number of orders
+      - name: total_order_value
+        data_type: DECIMAL(18,2)
+        description: Total value of the order
+      - name: fulfilled_orders
+        data_type: INT
+        description: Count of orders that have been fulfilled
+      - name: open_orders
+        data_type: INT
+        description: Count of orders that remain open
+      - name: partially_fulfilled_orders
+        data_type: INT
+        description: Count of orders that are partially fulfilled
+      - name: fulfillment_rate_pct
+        data_type: DECIMAL(9,2)
+        description: Percentage of orders fulfilled
+      - name: avg_order_value
+        data_type: DECIMAL(18,2)
+        description: Average value per order
+      - name: delivery_blocked_orders
+        data_type: INT
+        description: Count of orders blocked from delivery
+      - name: billing_blocked_orders
+        data_type: INT
+        description: Count of orders blocked from billing
+      - name: credit_blocked_orders
+        data_type: INT
+        description: Count of orders blocked due to credit hold
+    dealer_order_performance:
+      table_name: dealer_order_performance
+      description: Order volume and value performance metrics by dealer.
+      schema: React_OrderLens
+      storage_format: Delta
+      columns:
+      - name: dealer_key
+        data_type: STRING
+        description: Unique identifier for the dealer
+      - name: dealer_name
+        data_type: STRING
+        description: Name of the dealer
+      - name: dealer_country
+        data_type: STRING
+        description: Country code of the dealer
+      - name: dealer_region
+        data_type: STRING
+        description: Region of the dealer
+      - name: total_orders
+        data_type: INT
+        description: Total number of orders
+      - name: total_net_value
+        data_type: DECIMAL(18,2)
+        description: Total net value across orders
+      - name: total_gross_value
+        data_type: DECIMAL(18,2)
+        description: Total gross value across orders
+      - name: total_order_value
+        data_type: DECIMAL(18,2)
+        description: Total value of the order
+      - name: avg_net_order_value
+        data_type: DECIMAL(18,2)
+        description: Average net value per order
+      - name: avg_total_order_value
+        data_type: DECIMAL(18,2)
+        description: Average total value per order
+      - name: fulfilled_orders
+        data_type: INT
+        description: Count of orders that have been fulfilled
+      - name: open_orders
+        data_type: INT
+        description: Count of orders that remain open
+      - name: partially_fulfilled_orders
+        data_type: INT
+        description: Count of orders that are partially fulfilled
+    dealer_vs_end_customer_mix:
+      table_name: dealer_vs_end_customer_mix
+      description: Compares orders and order value attributable to identified end customers versus direct
+        dealer orders.
+      schema: React_OrderLens
+      storage_format: Delta
+      columns:
+      - name: dealer_key
+        data_type: STRING
+        description: Unique identifier for the dealer
+      - name: dealer_name
+        data_type: STRING
+        description: Name of the dealer
+      - name: dealer_country
+        data_type: STRING
+        description: Country code of the dealer
+      - name: total_orders
+        data_type: INT
+        description: Total number of orders
+      - name: orders_with_end_customer
+        data_type: INT
+        description: Count of orders that identify an end customer
+      - name: direct_dealer_orders
+        data_type: INT
+        description: Count of orders placed directly by the dealer without an end customer
+      - name: total_order_value
+        data_type: DECIMAL(18,2)
+        description: Total value of the order
+      - name: end_customer_order_value
+        data_type: DECIMAL(18,2)
+        description: Total order value attributed to orders with an identified end customer
+      - name: direct_dealer_order_value
+        data_type: DECIMAL(18,2)
+        description: Total order value attributed to direct dealer orders
+      - name: pct_orders_with_end_customer
+        data_type: DECIMAL(9,2)
+        description: Percentage of orders that identify an end customer
+      - name: pct_value_with_end_customer
+        data_type: DECIMAL(9,2)
+        description: Percentage of order value attributed to orders with an end customer
+  forecasting:
+    forecasting_accuracy_by_material_plant_period:
+      table_name: forecasting_accuracy_by_material_plant_period
+      description: Forecast accuracy metrics by material, plant, and forecast period.
+      schema: React_OrderLens
+      storage_format: Delta
+      columns:
+      - name: material_key
+        data_type: STRING
+        description: Unique identifier for the material/product
+      - name: plant_key
+        data_type: STRING
+        description: Unique identifier for the plant
+      - name: forecast_period
+        data_type: STRING
+        description: Period identifier for the forecast
+      - name: material_description
+        data_type: STRING
+        description: Descriptive text for the material
+      - name: material_type_code
+        data_type: STRING
+        description: Material type classification code
+      - name: material_group_code
+        data_type: STRING
+        description: Material group classification code
+      - name: plant_name
+        data_type: STRING
+        description: Name of the plant
+      - name: country_code
+        data_type: STRING
+        description: Country code
+      - name: region_code
+        data_type: STRING
+        description: Region code
+      - name: calendar_year
+        data_type: INT
+        description: Calendar year of the period
+      - name: calendar_month
+        data_type: INT
+        description: Calendar month number of the period
+      - name: month_name
+        data_type: STRING
+        description: Calendar month name
+      - name: total_forecast_quantity
+        data_type: DECIMAL(18,3)
+        description: Total forecasted quantity
+      - name: total_actual_sales_quantity
+        data_type: DECIMAL(18,3)
+        description: Total actual sales quantity
+      - name: forecast_variance
+        data_type: DECIMAL(18,3)
+        description: Variance between forecasted and actual quantity
+      - name: forecast_accuracy_percent
+        data_type: DECIMAL(9,2)
+        description: Accuracy of the forecast expressed as a percentage
+      - name: absolute_percentage_error
+        data_type: DECIMAL(9,2)
+        description: Absolute percentage error of the forecast
+    forecasting_method_performance:
+      table_name: forecasting_method_performance
+      description: Aggregated forecast accuracy performance by forecasting method.
+      schema: React_OrderLens
+      storage_format: Delta
+      columns:
+      - name: forecast_method_code
+        data_type: STRING
+        description: Code identifying the forecasting method used
+      - name: material_type_code
+        data_type: STRING
+        description: Material type classification code
+      - name: material_group_code
+        data_type: STRING
+        description: Material group classification code
+      - name: country_code
+        data_type: STRING
+        description: Country code
+      - name: forecast_count
+        data_type: INT
+        description: Count of forecasts
+      - name: avg_accuracy_percent
+        data_type: DECIMAL(9,2)
+        description: Average forecast accuracy percentage
+      - name: avg_absolute_percentage_error
+        data_type: DECIMAL(9,2)
+        description: Average absolute percentage error of forecasts
+      - name: error_std_deviation
+        data_type: DECIMAL(9,2)
+        description: Standard deviation of forecast error
+    forecasting_outlier_analysis:
+      table_name: forecasting_outlier_analysis
+      description: Individual forecast records highlighting variance outliers between forecasted and actual
+        quantities.
+      schema: React_OrderLens
+      storage_format: Delta
+      columns:
+      - name: material_key
+        data_type: STRING
+        description: Unique identifier for the material/product
+      - name: plant_key
+        data_type: STRING
+        description: Unique identifier for the plant
+      - name: forecast_period
+        data_type: STRING
+        description: Period identifier for the forecast
+      - name: material_description
+        data_type: STRING
+        description: Descriptive text for the material
+      - name: material_type_code
+        data_type: STRING
+        description: Material type classification code
+      - name: plant_name
+        data_type: STRING
+        description: Name of the plant
+      - name: country_code
+        data_type: STRING
+        description: Country code
+      - name: forecast_method_code
+        data_type: STRING
+        description: Code identifying the forecasting method used
+      - name: forecast_quantity
+        data_type: DECIMAL(18,3)
+        description: Forecasted quantity
+      - name: actual_sales_quantity
+        data_type: DECIMAL(18,3)
+        description: Actual sales quantity
+      - name: variance
+        data_type: DECIMAL(18,3)
+        description: Variance between forecasted and actual quantity
+      - name: absolute_percentage_error
+        data_type: DECIMAL(9,2)
+        description: Absolute percentage error of the forecast
+      - name: variance_category
+        data_type: STRING
+        description: Categorization of the forecast variance
+    forecasting_trend_analysis:
+      table_name: forecasting_trend_analysis
+      description: Forecast accuracy and volume trends aggregated by period, material type, and country.
+      schema: React_OrderLens
+      storage_format: Delta
+      columns:
+      - name: forecast_period
+        data_type: STRING
+        description: Period identifier for the forecast
+      - name: calendar_year
+        data_type: INT
+        description: Calendar year of the period
+      - name: calendar_month
+        data_type: INT
+        description: Calendar month number of the period
+      - name: month_name
+        data_type: STRING
+        description: Calendar month name
+      - name: material_type_code
+        data_type: STRING
+        description: Material type classification code
+      - name: country_code
+        data_type: STRING
+        description: Country code
+      - name: total_forecasts
+        data_type: INT
+        description: Total count of forecasts
+      - name: total_forecast_quantity
+        data_type: DECIMAL(18,3)
+        description: Total forecasted quantity
+      - name: total_actual_quantity
+        data_type: DECIMAL(18,3)
+        description: Total actual quantity
+      - name: avg_accuracy_percent
+        data_type: DECIMAL(9,2)
+        description: Average forecast accuracy percentage
+      - name: avg_absolute_percentage_error
+        data_type: DECIMAL(9,2)
+        description: Average absolute percentage error of forecasts
+      - name: overforecast_count
+        data_type: INT
+        description: Count of forecasts that overestimated actual demand
+      - name: underforecast_count
+        data_type: INT
+        description: Count of forecasts that underestimated actual demand
+  inventory:
+    inventory_current_stock_levels:
+      table_name: inventory_current_stock_levels
+      description: Current stock quantities by material, plant, and storage location as of the latest
+        snapshot.
+      schema: React_OrderLens
+      storage_format: Delta
+      columns:
+      - name: material_key
+        data_type: STRING
+        description: Unique identifier for the material/product
+      - name: material_description
+        data_type: STRING
+        description: Descriptive text for the material
+      - name: material_type_code
+        data_type: STRING
+        description: Material type classification code
+      - name: material_group_code
+        data_type: STRING
+        description: Material group classification code
+      - name: product_hierarchy
+        data_type: STRING
+        description: Product hierarchy classification
+      - name: plant_key
+        data_type: STRING
+        description: Unique identifier for the plant
+      - name: plant_name
+        data_type: STRING
+        description: Name of the plant
+      - name: country_code
+        data_type: STRING
+        description: Country code
+      - name: region_code
+        data_type: STRING
+        description: Region code
+      - name: storage_location_code
+        data_type: STRING
+        description: Storage location code
+      - name: unrestricted_stock_quantity
+        data_type: DECIMAL(18,3)
+        description: Quantity of unrestricted (available) stock
+      - name: stock_in_transfer_quantity
+        data_type: DECIMAL(18,3)
+        description: Quantity of stock currently in transfer
+      - name: total_available_stock
+        data_type: DECIMAL(18,3)
+        description: Total available stock quantity
+      - name: base_unit_of_measure
+        data_type: STRING
+        description: Base unit of measure for the material
+      - name: snapshot_date_key
+        data_type: INT
+        description: Date key of the inventory snapshot
+    inventory_plant_summary:
+      table_name: inventory_plant_summary
+      description: Plant-level summary of materials managed and stock levels relative to reorder and safety
+        stock thresholds.
+      schema: React_OrderLens
+      storage_format: Delta
+      columns:
+      - name: plant_key
+        data_type: STRING
+        description: Unique identifier for the plant
+      - name: plant_name
+        data_type: STRING
+        description: Name of the plant
+      - name: country_code
+        data_type: STRING
+        description: Country code
+      - name: region_code
+        data_type: STRING
+        description: Region code
+      - name: city
+        data_type: STRING
+        description: City name
+      - name: total_materials_managed
+        data_type: INT
+        description: Total count of materials managed at the plant
+      - name: materials_below_reorder_point
+        data_type: INT
+        description: Count of materials below their reorder point
+      - name: materials_below_safety_stock
+        data_type: INT
+        description: Count of materials below their safety stock level
+      - name: total_unrestricted_stock
+        data_type: DECIMAL(18,3)
+        description: Total unrestricted stock quantity
+      - name: total_stock_in_transfer
+        data_type: DECIMAL(18,3)
+        description: Total stock quantity in transfer
+      - name: latest_snapshot_date
+        data_type: INT
+        description: Date key of the most recent inventory snapshot
+    inventory_reorder_point_breaches:
+      table_name: inventory_reorder_point_breaches
+      description: Materials whose stock has fallen below their defined reorder point.
+      schema: React_OrderLens
+      storage_format: Delta
+      columns:
+      - name: material_key
+        data_type: STRING
+        description: Unique identifier for the material/product
+      - name: material_description
+        data_type: STRING
+        description: Descriptive text for the material
+      - name: material_type_code
+        data_type: STRING
+        description: Material type classification code
+      - name: material_group_code
+        data_type: STRING
+        description: Material group classification code
+      - name: plant_key
+        data_type: STRING
+        description: Unique identifier for the plant
+      - name: plant_name
+        data_type: STRING
+        description: Name of the plant
+      - name: country_code
+        data_type: STRING
+        description: Country code
+      - name: storage_location_code
+        data_type: STRING
+        description: Storage location code
+      - name: unrestricted_stock_quantity
+        data_type: DECIMAL(18,3)
+        description: Quantity of unrestricted (available) stock
+      - name: reorder_point_quantity
+        data_type: DECIMAL(18,3)
+        description: Reorder point threshold quantity
+      - name: reorder_shortage_quantity
+        data_type: DECIMAL(18,3)
+        description: Quantity by which stock falls short of the reorder point
+      - name: mrp_controller_code
+        data_type: STRING
+        description: Material Requirements Planning (MRP) controller code
+      - name: procurement_type_code
+        data_type: STRING
+        description: Procurement type code
+      - name: planned_delivery_days
+        data_type: INT
+        description: Planned number of days for delivery
+      - name: base_unit_of_measure
+        data_type: STRING
+        description: Base unit of measure for the material
+      - name: snapshot_date_key
+        data_type: INT
+        description: Date key of the inventory snapshot
+    inventory_safety_stock_coverage:
+      table_name: inventory_safety_stock_coverage
+      description: Materials' stock coverage relative to their defined safety stock levels.
+      schema: React_OrderLens
+      storage_format: Delta
+      columns:
+      - name: material_key
+        data_type: STRING
+        description: Unique identifier for the material/product
+      - name: material_description
+        data_type: STRING
+        description: Descriptive text for the material
+      - name: material_type_code
+        data_type: STRING
+        description: Material type classification code
+      - name: material_group_code
+        data_type: STRING
+        description: Material group classification code
+      - name: plant_key
+        data_type: STRING
+        description: Unique identifier for the plant
+      - name: plant_name
+        data_type: STRING
+        description: Name of the plant
+      - name: country_code
+        data_type: STRING
+        description: Country code
+      - name: storage_location_code
+        data_type: STRING
+        description: Storage location code
+      - name: unrestricted_stock_quantity
+        data_type: DECIMAL(18,3)
+        description: Quantity of unrestricted (available) stock
+      - name: safety_stock_quantity
+        data_type: DECIMAL(18,3)
+        description: Safety stock threshold quantity
+      - name: safety_stock_coverage_ratio
+        data_type: DECIMAL(9,3)
+        description: Ratio of available stock to safety stock requirement
+      - name: below_safety_stock
+        data_type: BOOLEAN
+        description: Indicator of whether stock is below the safety stock level
+      - name: safety_stock_shortage_quantity
+        data_type: DECIMAL(18,3)
+        description: Quantity by which stock falls short of the safety stock level
+      - name: mrp_controller_code
+        data_type: STRING
+        description: Material Requirements Planning (MRP) controller code
+      - name: base_unit_of_measure
+        data_type: STRING
+        description: Base unit of measure for the material
+      - name: snapshot_date_key
+        data_type: INT
+        description: Date key of the inventory snapshot
+  orders:
+    orders_backlog_analysis:
+      table_name: orders_backlog_analysis
+      description: Open (backlogged) order lines with age, requested delivery timing, and backorder reason
+        details.
+      schema: React_OrderLens
+      storage_format: Delta
+      columns:
+      - name: sales_order_id
+        data_type: STRING
+        description: Unique identifier for the sales order
+      - name: sales_order_category
+        data_type: STRING
+        description: Category classification of the sales order
+      - name: customer_name
+        data_type: STRING
+        description: Name of the customer
+      - name: customer_type
+        data_type: STRING
+        description: Type/classification of the customer
+      - name: order_date
+        data_type: DATE
+        description: Date the order was placed
+      - name: requested_delivery_date
+        data_type: DATE
+        description: Customer-requested delivery date
+      - name: order_age_days
+        data_type: INT
+        description: Number of days since the order was created
+      - name: days_to_requested_delivery
+        data_type: INT
+        description: Number of days until the requested delivery date
+      - name: material_key
+        data_type: STRING
+        description: Unique identifier for the material/product
+      - name: machine_model_code
+        data_type: STRING
+        description: Machine model code associated with the order line
+      - name: plant_name
+        data_type: STRING
+        description: Name of the plant
+      - name: total_open_quantity
+        data_type: DECIMAL(18,3)
+        description: Total quantity remaining open/unfulfilled
+      - name: sales_unit_of_measure
+        data_type: STRING
+        description: Unit of measure used for the sales quantity
+      - name: open_value
+        data_type: DECIMAL(18,2)
+        description: Monetary value of the open (unfulfilled) quantity
+      - name: line_currency_code
+        data_type: STRING
+        description: Currency code for the order line
+      - name: constrained_schedule_lines
+        data_type: INT
+        description: Count of schedule lines that are supply-constrained
+      - name: backorder_schedule_lines
+        data_type: INT
+        description: Count of schedule lines in backorder
+      - name: backorder_reasons
+        data_type: STRING
+        description: Reason(s) recorded for the backorder
+    orders_document_flow_tracking:
+      table_name: orders_document_flow_tracking
+      description: Document flow linkage between sales orders and their follow-up documents (e.g., deliveries,
+        invoices).
+      schema: React_OrderLens
+      storage_format: Delta
+      columns:
+      - name: document_flow_id
+        data_type: STRING
+        description: Unique identifier for the document flow record
+      - name: sales_order_id
+        data_type: STRING
+        description: Unique identifier for the sales order
+      - name: sales_order_line
+        data_type: STRING
+        description: Sales order line item reference
+      - name: follow_up_document_id
+        data_type: STRING
+        description: Identifier of the follow-up document in the document flow
+      - name: document_type
+        data_type: STRING
+        description: Type of the follow-up document
+      - name: follow_up_line
+        data_type: STRING
+        description: Line item reference on the follow-up document
+      - name: reference_quantity
+        data_type: DECIMAL(18,3)
+        description: Quantity referenced in the document flow
+      - name: reference_value
+        data_type: DECIMAL(18,2)
+        description: Value referenced in the document flow
+      - name: document_flow_date
+        data_type: DATE
+        description: Date of the document flow event
+      - name: sales_order_category
+        data_type: STRING
+        description: Category classification of the sales order
+      - name: customer_name
+        data_type: STRING
+        description: Name of the customer
+      - name: material_key
+        data_type: STRING
+        description: Unique identifier for the material/product
+      - name: machine_model_code
+        data_type: STRING
+        description: Machine model code associated with the order line
+    orders_fulfillment_schedule:
+      table_name: orders_fulfillment_schedule
+      description: Schedule line-level fulfillment detail, including requested, confirmed, and open quantities
+        and key planning dates.
+      schema: React_OrderLens
+      storage_format: Delta
+      columns:
+      - name: schedule_line_id
+        data_type: STRING
+        description: Unique identifier for the schedule line
+      - name: sales_order_id
+        data_type: STRING
+        description: Unique identifier for the sales order
+      - name: sales_order_line_id
+        data_type: STRING
+        description: Unique identifier for the sales order line item
+      - name: schedule_line_number
+        data_type: STRING
+        description: Schedule line number
+      - name: requested_quantity
+        data_type: DECIMAL(18,3)
+        description: Quantity requested on the schedule line
+      - name: confirmed_quantity
+        data_type: DECIMAL(18,3)
+        description: Quantity confirmed on the schedule line
+      - name: open_schedule_quantity
+        data_type: DECIMAL(18,3)
+        description: Quantity remaining open on the schedule line
+      - name: unconfirmed_quantity
+        data_type: DECIMAL(18,3)
+        description: Quantity not yet confirmed on the schedule line
+      - name: requested_delivery_date
+        data_type: DATE
+        description: Customer-requested delivery date
+      - name: material_availability_date
+        data_type: DATE
+        description: Date the material is expected to be available
+      - name: planned_goods_issue_date
+        data_type: DATE
+        description: Planned date for goods issue
+      - name: loading_date
+        data_type: DATE
+        description: Planned loading date for shipment
+      - name: transportation_planning_date
+        data_type: DATE
+        description: Planned date for transportation planning
+      - name: schedule_line_category
+        data_type: STRING
+        description: Schedule line category code
+      - name: allocation_pool_code
+        data_type: STRING
+        description: Allocation pool code used for supply constraint management
+      - name: constrained_supply_indicator
+        data_type: STRING
+        description: Indicator that supply is constrained for the schedule line
+      - name: backorder_reason_code
+        data_type: STRING
+        description: Code identifying the reason for the backorder
+      - name: has_open_quantity
+        data_type: STRING
+        description: Indicator of whether the schedule line has an open quantity
+    orders_header_summary:
+      table_name: orders_header_summary
+      description: Header-level summary of sales orders, including status, blocking flags, and key order
+        dates and values.
+      schema: React_OrderLens
+      storage_format: Delta
+      columns:
+      - name: sales_order_id
+        data_type: STRING
+        description: Unique identifier for the sales order
+      - name: sales_order_type_code
+        data_type: STRING
+        description: Sales order type code
+      - name: sales_order_category
+        data_type: STRING
+        description: Category classification of the sales order
+      - name: order_date
+        data_type: DATE
+        description: Date the order was placed
+      - name: order_created_datetime
+        data_type: TIMESTAMP
+        description: Date and time the order was created
+      - name: customer_name
+        data_type: STRING
+        description: Name of the customer
+      - name: customer_type
+        data_type: STRING
+        description: Type/classification of the customer
+      - name: customer_country
+        data_type: STRING
+        description: Country code of the customer
+      - name: customer_purchase_order_number
+        data_type: STRING
+        description: Customer's purchase order number
+      - name: net_order_value
+        data_type: DECIMAL(18,2)
+        description: Net value of the order excluding taxes/surcharges
+      - name: total_order_value
+        data_type: DECIMAL(18,2)
+        description: Total value of the order
+      - name: currency_code
+        data_type: STRING
+        description: Currency code of the associated monetary values
+      - name: overall_order_status
+        data_type: STRING
+        description: Overall status of the order
+      - name: delivery_blocked
+        data_type: STRING
+        description: Indicator of whether the order is blocked from delivery
+      - name: billing_blocked
+        data_type: STRING
+        description: Indicator of whether the order is blocked from billing
+      - name: credit_blocked
+        data_type: STRING
+        description: Indicator of whether the order is blocked due to credit hold
+      - name: requested_delivery_date
+        data_type: DATE
+        description: Customer-requested delivery date
+      - name: payment_terms_code
+        data_type: STRING
+        description: Payment terms code
+      - name: incoterms_code
+        data_type: STRING
+        description: Incoterms code governing shipping/delivery terms
+      - name: created_by_user_id
+        data_type: STRING
+        description: User ID of the person who created the order
+      - name: last_changed_datetime
+        data_type: TIMESTAMP
+        description: Date and time the order was last changed
+    orders_line_detail:
+      table_name: orders_line_detail
+      description: Line-item level detail for sales orders, including quantities, pricing, and status.
+      schema: React_OrderLens
+      storage_format: Delta
+      columns:
+      - name: sales_order_line_id
+        data_type: STRING
+        description: Unique identifier for the sales order line item
+      - name: sales_order_id
+        data_type: STRING
+        description: Unique identifier for the sales order
+      - name: sales_order_item_number
+        data_type: STRING
+        description: Sales order item/line number
+      - name: material_key
+        data_type: STRING
+        description: Unique identifier for the material/product
+      - name: plant_name
+        data_type: STRING
+        description: Name of the plant
+      - name: plant_country
+        data_type: STRING
+        description: Country code of the plant
+      - name: ordered_quantity
+        data_type: DECIMAL(18,3)
+        description: Quantity ordered on the line
+      - name: sales_unit_of_measure
+        data_type: STRING
+        description: Unit of measure used for the sales quantity
+      - name: unit_net_price
+        data_type: DECIMAL(18,2)
+        description: Net price per unit
+      - name: line_net_value
+        data_type: DECIMAL(18,2)
+        description: Net value of the order line
+      - name: line_currency_code
+        data_type: STRING
+        description: Currency code for the order line
+      - name: item_delivery_status
+        data_type: STRING
+        description: Delivery status of the order line item
+      - name: item_billing_status
+        data_type: STRING
+        description: Billing status of the order line item
+      - name: item_overall_status
+        data_type: STRING
+        description: Overall status of the order line item
+      - name: machine_model_code
+        data_type: STRING
+        description: Machine model code associated with the order line
+      - name: configuration_id
+        data_type: STRING
+        description: Identifier for the product configuration associated with the line
+      - name: rejection_reason
+        data_type: STRING
+        description: Reason code for the order line rejection, if any
+      - name: line_created_date
+        data_type: DATE
+        description: Date the order line was created
+  product:
+    product_current_inventory_position:
+      table_name: product_current_inventory_position
+      description: Current inventory position by material, aggregating stock, safety stock, and reorder
+        point across storage locations.
+      schema: React_OrderLens
+      storage_format: Delta
+      columns:
+      - name: material_key
+        data_type: STRING
+        description: Unique identifier for the material/product
+      - name: material_description
+        data_type: STRING
+        description: Descriptive text for the material
+      - name: material_type_code
+        data_type: STRING
+        description: Material type classification code
+      - name: material_group_code
+        data_type: STRING
+        description: Material group classification code
+      - name: product_hierarchy
+        data_type: STRING
+        description: Product hierarchy classification
+      - name: plant_key
+        data_type: STRING
+        description: Unique identifier for the plant
+      - name: total_unrestricted_stock
+        data_type: DECIMAL(18,3)
+        description: Total unrestricted stock quantity
+      - name: total_stock_in_transfer
+        data_type: DECIMAL(18,3)
+        description: Total stock quantity in transfer
+      - name: total_safety_stock
+        data_type: DECIMAL(18,3)
+        description: Total safety stock quantity
+      - name: total_reorder_point
+        data_type: DECIMAL(18,3)
+        description: Total reorder point quantity across storage locations
+      - name: locations_below_reorder_point
+        data_type: INT
+        description: Count of storage locations below their reorder point
+      - name: total_storage_locations
+        data_type: INT
+        description: Total count of storage locations managing the material
+    product_family_performance_summary:
+      table_name: product_family_performance_summary
+      description: Sales performance metrics aggregated by product family (product hierarchy).
+      schema: React_OrderLens
+      storage_format: Delta
+      columns:
+      - name: product_hierarchy
+        data_type: STRING
+        description: Product hierarchy classification
+      - name: material_type_code
+        data_type: STRING
+        description: Material type classification code
+      - name: materials_in_family
+        data_type: INT
+        description: Count of materials within the product family
+      - name: total_order_lines
+        data_type: INT
+        description: Total count of order lines
+      - name: total_units_sold
+        data_type: DECIMAL(18,3)
+        description: Total quantity of units sold
+      - name: total_revenue
+        data_type: DECIMAL(18,2)
+        description: Total revenue generated
+      - name: avg_unit_price
+        data_type: DECIMAL(18,2)
+        description: Average unit selling price
+    product_material_sales_performance:
+      table_name: product_material_sales_performance
+      description: Sales performance metrics by individual material.
+      schema: React_OrderLens
+      storage_format: Delta
+      columns:
+      - name: material_key
+        data_type: STRING
+        description: Unique identifier for the material/product
+      - name: material_description
+        data_type: STRING
+        description: Descriptive text for the material
+      - name: material_type_code
+        data_type: STRING
+        description: Material type classification code
+      - name: material_group_code
+        data_type: STRING
+        description: Material group classification code
+      - name: product_hierarchy
+        data_type: STRING
+        description: Product hierarchy classification
+      - name: total_order_lines
+        data_type: INT
+        description: Total count of order lines
+      - name: total_units_sold
+        data_type: DECIMAL(18,3)
+        description: Total quantity of units sold
+      - name: total_revenue
+        data_type: DECIMAL(18,2)
+        description: Total revenue generated
+      - name: avg_unit_price
+        data_type: DECIMAL(18,2)
+        description: Average unit selling price
+      - name: distinct_orders
+        data_type: INT
+        description: Count of distinct orders
+    product_sales_vs_inventory_analysis:
+      table_name: product_sales_vs_inventory_analysis
+      description: Compares sales performance against inventory position by material.
+      schema: React_OrderLens
+      storage_format: Delta
+      columns:
+      - name: material_key
+        data_type: STRING
+        description: Unique identifier for the material/product
+      - name: material_description
+        data_type: STRING
+        description: Descriptive text for the material
+      - name: material_type_code
+        data_type: STRING
+        description: Material type classification code
+      - name: material_group_code
+        data_type: STRING
+        description: Material group classification code
+      - name: product_hierarchy
+        data_type: STRING
+        description: Product hierarchy classification
+      - name: total_units_sold
+        data_type: DECIMAL(18,3)
+        description: Total quantity of units sold
+      - name: total_revenue
+        data_type: DECIMAL(18,2)
+        description: Total revenue generated
+      - name: avg_unit_price
+        data_type: DECIMAL(18,2)
+        description: Average unit selling price
+      - name: total_unrestricted_stock
+        data_type: DECIMAL(18,3)
+        description: Total unrestricted stock quantity
+      - name: total_safety_stock
+        data_type: DECIMAL(18,3)
+        description: Total safety stock quantity
+      - name: locations_below_reorder_point
+        data_type: INT
+        description: Count of storage locations below their reorder point
+      - name: stock_to_sales_ratio
+        data_type: DECIMAL(18,4)
+        description: Ratio of available stock to units sold
+  application_metadata:
+    GENIE_QUESTION_HISTORY:
+      table_name: genie_question_history
+      description: Normalized history of user questions asked through the Genie AI assistant, including
+        persona, user, and usage frequency metadata.
+      schema: React_OrderLens
+      storage_format: Delta
+      columns:
+      - name: NORMALIZED_QUERY
+        data_type: STRING
+        description: Normalized text of the user's question, used for grouping similar queries
+      - name: TYPE
+        data_type: STRING
+        description: Type/category of the question or query
+      - name: PERSONA
+        data_type: STRING
+        description: Persona associated with the question or insight
+      - name: USER_NAME
+        data_type: STRING
+        description: Name of the user who asked the question
+      - name: FREQUENCY
+        data_type: INT
+        description: Number of times the normalized query has been asked
+      - name: LAST_ASKED_AT
+        data_type: TIMESTAMP
+        description: Timestamp of when the query was most recently asked
+    SAVED_INSIGHTS:
+      table_name: saved_insights
+      description: Saved insights created from Genie AI interactions, including the verified query, underlying
+        SQL text, persona, page, title, and tags.
+      schema: React_OrderLens
+      storage_format: Delta
+      columns:
+      - name: INSIGHT_ID
+        data_type: INT
+        description: Unique identifier for the saved insight
+      - name: CREATED_AT
+        data_type: TIMESTAMP
+        description: Timestamp when the insight was created
+      - name: CREATED_BY
+        data_type: STRING
+        description: User who created the insight
+      - name: PERSONA
+        data_type: STRING
+        description: Persona associated with the question or insight
+      - name: PAGE
+        data_type: STRING
+        description: Application page the insight is associated with
+      - name: TITLE
+        data_type: STRING
+        description: Title of the saved insight
+      - name: QUESTION
+        data_type: STRING
+        description: Original question associated with the insight
+      - name: VERIFIED_QUERY_NAME
+        data_type: STRING
+        description: Name of the verified query linked to the insight
+      - name: SQL_TEXT
+        data_type: STRING
+        description: SQL text of the underlying verified query
+      - name: TAGS
+        data_type: STRING
+        description: Tags associated with the saved insight
+    AGENT_REVIEW_LOG:
+      table_name: agent_review_log
+      description: Log of agent review actions taken on entities, including the action, notes, and reviewer
+        metadata.
+      schema: React_OrderLens
+      storage_format: Delta
+      columns:
+      - name: REVIEW_ID
+        data_type: INT
+        description: Unique identifier for the review log entry
+      - name: AGENT_KEY
+        data_type: STRING
+        description: Identifier of the agent that performed the review action
+      - name: ENTITY_ID
+        data_type: STRING
+        description: Identifier of the entity that was reviewed
+      - name: ENTITY_TYPE
+        data_type: STRING
+        description: Type of the entity that was reviewed
+      - name: ACTION_TAKEN
+        data_type: STRING
+        description: Action taken by the agent during the review
+      - name: NOTES
+        data_type: STRING
+        description: Free-text notes recorded for the review
+      - name: REVIEWED_BY
+        data_type: STRING
+        description: User or agent who performed the review
+      - name: REVIEWED_AT
+        data_type: TIMESTAMP
+        description: Timestamp when the review was performed
