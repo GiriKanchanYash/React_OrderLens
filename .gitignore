@@ -1,0 +1,19 @@
+# Secrets - never commit, only .env.example goes in the repo
+.env
+.env.*
+!.env.example
+ 
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+antenv/
+ 
+# OS/editor
+.DS_Store
+.vscode/
+.idea/
+ 
+# Node (if the frontend source lives in this repo too)
+node_modules/
