@@ -112,6 +112,7 @@ def _load_conn_params() -> dict[str, str]:
 
 _P = _load_conn_params()
 SCHEMA = _P["schema"] or "dbo"
+DATABASE = _P["database"] or "master"
 IM = SCHEMA  # matches the Snowflake original's IM (schema-qualified prefix) usage
 
 
@@ -218,7 +219,7 @@ def run_execute(sql: str, params: tuple | None = None) -> None:
 def qview(name: str) -> str:
     """Schema-qualified table reference. Tables are flat (no BASE_LAYER joins
     needed) so this just prefixes the configured schema."""
-    return f"{SCHEMA}.{name.strip().strip(chr(34)).lower()}"
+    return f"{DATABASE}.{SCHEMA}.{name.strip().strip(chr(34)).lower()}"
 
 
 def qcol(name: str, view: str | None = None) -> str:
